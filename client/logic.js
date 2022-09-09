@@ -56,6 +56,12 @@ const welcomePageButton = () => {
     roomButton.innerText = "Join room";
     roomButton.addEventListener("click", () => {
         if(room != ""){
+            let currentRoom = document.createElement("h4");
+            currentRoom.classList.add("currentRoom");
+            currentRoom.innerText = `Current room: ${room}`;
+            
+            document.getElementsByClassName("chatMsgBox")[0].append(currentRoom);
+
             socket.emit("room", room);
         }
     })
@@ -67,27 +73,31 @@ const welcomePageButton = () => {
     chatInputBox.classList.add("chatInputBox");
 
     let chatInput = document.createElement("input");
+    chatInput.classList.add("chatinput");
 
     let chatButton = document.createElement("button");
     chatButton.innerText = "Send";
     chatButton.addEventListener("click", () => {
-        if(chatInput.value != ""){
-            let chatMsgdiv = document.createElement("div");
+        if(document.getElementsByClassName("chatinput")[0].value != ""){
+            let senderMsgdiv = document.createElement("div");
+            senderMsgdiv.classList.add("senderMsgdiv");
 
-            let chatMsgSender = document.createElement("h5");
-            chatMsgSender.innerText = nickname;
+            let senderMsgName = document.createElement("h5");
+            senderMsgName.classList.add("senderMsgName");
+            senderMsgName.innerText = nickname;
 
-            let chatMsg = document.createElement("p");
-            chatMsg.classList.add("chatMsg");
-            chatMsg.innerText = chatInput.value
+            let senderMsg = document.createElement("p")
+            senderMsg.classList.add("senderMsg");
+            senderMsg.innerText = document.getElementsByClassName("chatinput")[0].value;
 
-            chatMsgBox.append(chatMsgdiv);
-            chatMsgdiv.append(chatMsgSender, chatMsg); 
+            chatMsgBox.append(senderMsgdiv);
+            senderMsgdiv.append(senderMsgName, senderMsg);
+
+            socket.emit("chatMsg", document.getElementsByClassName("chatInput")[0].value, nickname, room);
         }
+    });
 
-        
-
-});
+    
 
     document.body.append(mainContainer);
     mainContainer.append(leftContainer, rightContainer);
@@ -96,4 +106,37 @@ const welcomePageButton = () => {
     chatInputBox.append(chatInput, chatButton);
 }
 
+socket.on("chatMsg", (msg, sender) => {
+    console.log(msg, sender);
+
+    let chatMsgdiv = document.createElement("div");
+
+    let chatMsgSender = document.createElement("h5");
+    chatMsgSender.innerText = sender;
+
+    let chatMsg = document.createElement("p");
+    chatMsg.classList.add("chatMsg");
+    chatMsg.innerText = msg;
+
+    document.getElementsByClassName("chatMsgBox")[0].append(chatMsgdiv);
+    chatMsgdiv.append(chatMsgSender, chatMsg); 
+})
+
 window.addEventListener("load", welcomePage);
+
+
+/*
+if(chatInput.value != ""){
+    let chatMsgdiv = document.createElement("div");
+
+    let chatMsgSender = document.createElement("h5");
+    chatMsgSender.innerText = nickname;
+
+    let chatMsg = document.createElement("p");
+    chatMsg.classList.add("chatMsg");
+    chatMsg.innerText = chatInput.value
+
+    chatMsgBox.append(chatMsgdiv);
+    chatMsgdiv.append(chatMsgSender, chatMsg); 
+}
+*/

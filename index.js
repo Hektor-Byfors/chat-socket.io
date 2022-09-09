@@ -16,11 +16,14 @@ io.on("connection", (socket) => {
     })
 
     socket.on("room", data => {
-        //console.log("room join " + data);
+        console.log("room join " + data);
         socket.join(data);
         //console.log(io.sockets.adapter.rooms );
     })
 
+    socket.on("chatMsg", (msg, nickname, room) => {
+        socket.broadcast.to(room).emit("chatMsg", msg, nickname);
+    })
 })
 
 server.listen(3000, () => {
